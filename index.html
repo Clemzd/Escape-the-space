@@ -16,8 +16,10 @@
     <body>
         <script>
         (function() {
-            var width = window.innerWidth - 20;
-            var height = window.innerHeight - 20;
+            /*var width = window.innerWidth - 20;
+            var height = window.innerHeight - 20;*/
+            var width = 800;
+            var height = 600;
 
             var game = new Phaser.Game(width, height, Phaser.AUTO, '');
             game.state.add('Boot', Boot);

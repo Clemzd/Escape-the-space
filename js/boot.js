@@ -10,4 +10,4 @@ Boot.prototype = {
     update: function() {
 
     }
-}
+};
