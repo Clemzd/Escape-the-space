@@ -1,10 +1,9 @@
 "use strict";
-var Game = function(game) {};
+var Level2 = function(game) {};
 
-Game.prototype = {
+Level2.prototype = {
     hasActionOccured: true,
     cutscene: false,
-    timerEvents: [],
     tween: null,
 
     preload: function() {},
@@ -17,18 +16,20 @@ Game.prototype = {
         //  We need arcade physics
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-        // background star
-        this.game.world.setBounds(0, 0, 1000, 600);
-        this.game.add.tileSprite(0, 0, 1000, 600, 'starfield');
-
-
-        //music = this.game.add.audio('interstellar');
-        // music.play();
-        // music.volume += 3.0;
-
-
         // background stars
-        this.station = this.game.add.sprite(0, this.game.height / 2, 'station');
+        this.game.world.setBounds(0, 0, 3000, 1500);
+        this.game.add.tileSprite(0, 0, 3000, 1500, 'starfield');
+
+        // black hole
+        this.blackhole = this.game.add.sprite(2000, 300, 'blackhole');
+        this.blackhole.alpha = 0.2;
+        this.game.physics.enable(this.blackhole, Phaser.Physics.ARCADE);
+        this.blackhole.body.setSize(50, 50, 100, 100);
+        this.blackhole.body.collideWorldBounds = true;
+        this.blackhole.body.immovable = true;
+
+        // station
+        this.station = this.game.add.sprite(1000, this.game.height / 2, 'station');
         this.game.physics.enable(this.station, Phaser.Physics.ARCADE);
 
         // ship
@@ -46,81 +47,78 @@ Game.prototype = {
         // Game input
         this.cursors = this.game.input.keyboard.createCursorKeys();
 
-        this.text = this.game.add.text(0, 0, "Find the way out from space!", {
-            font: "35px Consolas",
+        this.text = this.game.add.text(10, 0, "Find the way out from space! LVL2", {
+            font: "35px Arial",
             fill: "#BDBDBD",
             align: "center"
         });
         this.text.fixedToCamera = true;
-        this.game.time.events.loop(1 * Phaser.Timer.SECOND, this.checkEnd, this);
-        // this.game.height / 2, y:
-        // game.add.tween(sprites.cursor).to( { y: 500 }, 2000, Phaser.Easing.Bounce.Out, true);
     },
 
-    checkEnd: function() {
-        if (this.hasActionOccured) {
-            this.hasActionOccured = false; // resetting the variable
-        } else {
-            this.end();
-        }
-    },
+   update: function() {
+        // check collision between the ship and the black hole
+        this.game.physics.arcade.collide(this.ship, this.blackhole, this.collisionHandler, null, this);
 
-    update: function() {
         if (!this.cutscene) {
 
             // input to move the ship
-            if (this.cursors.up.isDown) {
+            if (this.cursors.up.isDown)
+            {
                 this.game.physics.arcade.accelerationFromRotation(this.ship.rotation, 200, this.ship.body.acceleration);
                 this.ship.animations.play('accelerate', 10, true);
-            } else {
+            }
+            else
+            {
                 // stopper the acceleration 
                 this.ship.body.acceleration.set(0);
                 this.ship.animations.play('stop', true);
             }
 
-            if (this.cursors.left.isDown) {
+            if (this.cursors.left.isDown)
+            {
                 this.ship.body.angularVelocity = -300;
-            } else if (this.cursors.right.isDown) {
+            }
+            else if (this.cursors.right.isDown)
+            {
                 this.ship.body.angularVelocity = 300;
-            } else {
+            }
+            else
+            {
                 // stop the rotation
                 this.ship.body.angularVelocity = 0;
             }
 
-            if (this.cursors.up.isDown || this.cursors.left.isDown || this.cursors.right.isDown || this.cursors.down.isDown) {
+            if (this.cursors.up.isDown || this.cursors.left.isDown || this.cursors.right.isDown || this.cursors.down.isDown)
+            {
                 this.hasActionOccured = true;
             }
-        } else {
-            if (!this.tween.isRunning) {
-                this.game.state.start('Game');
+        }
+        else
+        {
+            if (!this.tween.isRunning)
+            {
+                // start the next level
+                this.game.state.start('Soon');
             }
         }
     },
 
-    end: function() {
-        // otherwise the event loops and end is calling back again
-        this.game.time.events.removeAll();
-
-        // informer l'utilisateur de la fin
-        this.text.setText("Congrats! You made it!");
+    collisionHandler: function(ship, blackhole) {
+         // informer l'utilisateur de la fin
+       this.text.setText("Congrats! You made it!");
 
         // lancer l'animation
         this.cutscene = true;
 
-        // lancer l'animation pour les réacteurs
-        this.ship.animations.play('accelerate', 10, true);
-
-        // mettre le vaisseau vers la droite
-        this.ship.rotation = this.game.physics.arcade.moveToXY(this.ship, 200, this.station, 500);
         this.tween = this.game.add.tween(this.ship);
-
-        // bouger le vaisseau vers la droite
         this.tween.to({
-            x: 2000
-        }, 4000, Phaser.Easing.Linear.None, true);
+            angle: '+900',
+            alpha: 0
+        }, 3000, Phaser.Easing.Linear.None, true);
     },
 
-    render: function() {
+   render: function() {
         //this.game.debug.spriteInfo(this.ship, 32, 100);
+        // this.game.debug.body(this.blackhole);
     }
 };

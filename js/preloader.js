@@ -5,20 +5,21 @@ Preloader.prototype = {
         this.game.load.image('starfield', 'assets/starfield.png');
         this.game.load.spritesheet('ship', 'assets/ship.png', 64, 29);
         this.game.load.spritesheet('station', 'assets/station.png', 400, 400);
-        //this.game.load.audio('interstellar', 'music/interstellar.mp3');
+        this.game.load.spritesheet('blackhole', 'assets/blackhole.png', 256, 256);
+        
     },
 
     create: function() {
-        /*text = this.game.add.text(0, 0, "Loading...", {
+        // a message during loading of all the assets
+        text = this.game.add.text(0, 0, "Loading...", {
             font: "65px Consolas",
             fill: "#BDBDBD",
             align: "center"
-        });*/
+        });
         
         
-        // rest
-        this.game.state.start('Game');
-
+        // start the game
+        this.game.state.start('Level1');
     },
 
     update: function() {
