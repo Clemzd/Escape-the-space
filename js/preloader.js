@@ -22,7 +22,6 @@ Preloader.prototype = {
             align: "center"
         });
 
-        
         // start the game
         this.game.state.start('Level1');
     },

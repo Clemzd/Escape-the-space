@@ -31,6 +31,7 @@ Soon.prototype = {
         this.ship = this.game.add.sprite(this.game.width / 2 + 100, this.game.height / 2, 'ship');
         this.ship.animations.add('accelerate', [1, 2, 3, 4]);
         this.ship.anchor.set(0.5);
+        this.ship.scale.setTo(1.2, 1.2);
         this.game.physics.enable(this.ship, Phaser.Physics.ARCADE);
         this.ship.body.maxVelocity.set(5000);
         this.ship.body.collideWorldBounds = true;

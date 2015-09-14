@@ -5,7 +5,11 @@ Level1.prototype = {
     cutscene: false,
     tween: null,
 
-    preload: function() {},
+    preload: function() {
+        // define real worlds bounds
+        this.game.rwidth = this.game.width * 2;
+        this.game.rheight = this.game.height * 2;
+    },
 
     create: function() {
         //  This will run in Canvas mode, so let's gain a little speed and display
@@ -15,25 +19,24 @@ Level1.prototype = {
         //  We need arcade physics
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-        // background stars
-        this.game.world.setBounds(0, 0, 3000, 1500);
-        this.game.add.tileSprite(0, 0, 3000, 1500, 'starfield');
+         // background stars
+        this.game.world.setBounds(0, 0, this.game.rwidth, this.game.rheight);
+        this.game.add.tileSprite(0, 0, this.game.rwidth, this.game.rheight, 'starfield');
 
         // black hole
-        this.blackhole = this.game.add.sprite(2500, 300, 'blackhole');
-        this.blackhole.alpha = 0.2;
+        this.blackhole = this.game.add.sprite(2500, this.game.width - 100, 'blackhole');
+        this.blackhole.alpha = 0.1;
         this.game.physics.enable(this.blackhole, Phaser.Physics.ARCADE);
         this.blackhole.body.setSize(50, 50, 100, 100);
         this.blackhole.body.collideWorldBounds = true;
         this.blackhole.body.immovable = true;
 
         // meteors
-        var nbMeteors = 50;
+        var nbMeteors = 40;
         var meteorsSprite = ['meteorBig1', 'meteorBig2', 'meteorMed1', 'meteorMed2', 'meteorTiny1', 'meteorTiny2'];
-        for (var i=0; i<nbMeteors; i++)
-        {
-            var randomLogicalX = this.game.rnd.integerInRange(0, 3000);
-            var randomLogicalY = this.game.rnd.integerInRange(0, 1500);
+        for (var i = 0; i < nbMeteors; i++) {
+            var randomLogicalX = this.game.rnd.integerInRange(0, this.game.rwidth);
+            var randomLogicalY = this.game.rnd.integerInRange(0, this.game.rheight);
             var randomMeteorSprite = meteorsSprite[this.game.rnd.integerInRange(0, meteorsSprite.length)];
             var tempMeteor = this.game.add.sprite(randomLogicalX, randomLogicalY, randomMeteorSprite);
             tempMeteor.rotation = this.game.rnd.integerInRange(0, 360);
@@ -46,8 +49,8 @@ Level1.prototype = {
         this.ship.anchor.set(0.5);
         this.ship.scale.setTo(1.2, 1.2);
         this.game.physics.enable(this.ship, Phaser.Physics.ARCADE);
-
-        this.ship.body.drag.set(120);
+        // inertie (plus x est élevé moins l'inertie est forte)
+        this.ship.body.drag.set(300);
         // définir la vitesse maximale du vaisseau
         this.ship.body.maxVelocity.set(400);
         this.ship.body.collideWorldBounds = true;
@@ -64,14 +67,18 @@ Level1.prototype = {
             align: "center"
         });
 
-        // add a clue 
+        // ajouter un indice qui sera afficher au bout de 30 secondes de jeu
         this.game.time.events.add(Phaser.Timer.SECOND * 30, this.addClue, this);
 
         this.text.fixedToCamera = true;
     },
 
     addClue: function() {
+        // afficher l'aide "trouver le trou noir" !
         this.text.setText("Find the blackhole!");
+
+        // rendre plus visible le trou noir
+        this.blackhole.alpha = 0.2;
     },
 
     update: function() {
@@ -85,7 +92,7 @@ Level1.prototype = {
                 this.game.physics.arcade.accelerationFromRotation(this.ship.rotation, 200, this.ship.body.acceleration);
                 this.ship.animations.play('accelerate', 10, true);
             } else {
-                // stopper the acceleration 
+                // stopp the acceleration 
                 this.ship.body.acceleration.set(0);
                 this.ship.animations.play('stop', true);
             }
@@ -108,6 +115,12 @@ Level1.prototype = {
     },
 
     collisionHandler: function(ship, blackhole) {
+        // arrêter sa rotation
+        ship.body.angularVelocity = 0;
+
+        // stoper le vaisseau
+        ship.body.acceleration.set(0);
+
         // informer l'utilisateur de la fin
         this.text.setText("Congrats! You made it!");
 
