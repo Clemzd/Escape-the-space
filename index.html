@@ -2,7 +2,8 @@
 <html>
     <head>
         <meta charset="UTF-8" />
-        <title>Intestellar</title>
+        <title>Escape the space</title>
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
         <style>
           body{
             background-color: white;
@@ -12,7 +13,6 @@
         <script src="js/boot.js"></script>
         <script src="js/preloader.js"></script>
         <script src="js/level1.js"></script>
-        <script src="js/level2.js"></script>
         <script src="js/soon.js"></script>
     </head>
     <body>
@@ -27,7 +27,6 @@
             game.state.add('Boot', Boot);
             game.state.add('Preloader', Preloader);
             game.state.add('Level1', Level1);
-            game.state.add('Level2', Level2);
             game.state.add('Soon', Soon);
             game.state.start('Boot');
         })();
